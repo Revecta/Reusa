@@ -50,7 +50,7 @@ const AboutUs: React.FC = () => {
             <div className="flex-shrink-0">
               <div className="w-48 h-48 rounded-full bg-gray-300 overflow-hidden">
                 <img 
-                  src="/home/project/public/images/Michele_lazzari_portrait_reusalogolow.png"
+                  src="/public/images/Michele_lazzari_portrait_reusalogolow.png"
                   alt="Michele Lazzari - Founder"
                   className="w-full h-full object-cover"
                 />
