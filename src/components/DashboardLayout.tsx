@@ -1,6 +1,6 @@
 import React from 'react';
 import { useAuth } from '../hooks/useAuth';
-import { LogOut, User, Package } from 'lucide-react';
+import { LogOut, User } from 'lucide-react';
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -21,11 +21,13 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-4">
             <div className="flex items-center">
-              <div className="bg-emerald-600 p-2 rounded-lg mr-3">
-                <Package className="h-6 w-6 text-white" />
-              </div>
+              <img 
+                src="/images/reusa-logo.svg" 
+                alt="Reusa Logo" 
+                className="h-10 w-auto mr-3"
+              />
               <div>
-                <h1 className="text-xl font-bold text-gray-900">Reusa Dashboard</h1>
+                <h1 className="text-xl font-bold text-gray-900">Dashboard</h1>
                 <p className="text-emerald-600 text-sm">Manage your boxes</p>
               </div>
             </div>

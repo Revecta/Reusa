@@ -92,6 +92,17 @@ export function useAuth() {
     return { error };
   };
 
+  const resetPassword = async (email: string) => {
+    if (!isSupabaseConfigured) {
+      return { data: null, error: { message: 'Database connection not configured. Please connect to Supabase to enable password reset.' } };
+    }
+    
+    const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/reset-password`,
+    });
+    return { data, error };
+  };
+
   return {
     user,
     session,
@@ -99,6 +110,7 @@ export function useAuth() {
     signIn,
     signUp,
     signOut,
+    resetPassword,
     isSupabaseConfigured,
   };
 }

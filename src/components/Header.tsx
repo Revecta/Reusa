@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Menu, X, Leaf, User, LogOut, LogIn, AlertCircle } from 'lucide-react';
+import { Menu, X, User, LogOut, LogIn, AlertCircle } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { isSupabaseConfigured } from '../lib/supabase';
@@ -49,13 +49,11 @@ const Header = () => {
           <div className="flex justify-between items-center py-4">
             {/* Logo */}
             <Link to="/" className="flex items-center">
-              <div className="bg-emerald-600 p-2 rounded-lg mr-3">
-                <Leaf className="h-8 w-8 text-white" />
-              </div>
-              <div>
-                <h1 className="text-2xl font-bold text-gray-900">Reusa</h1>
-                <p className="text-emerald-600 text-sm font-medium">Reimagine Shipping</p>
-              </div>
+              <img 
+                src="/images/reusa-logo.svg" 
+                alt="Reusa Logo" 
+                className="h-12 w-auto"
+              />
             </Link>
 
             {/* Desktop Navigation */}
