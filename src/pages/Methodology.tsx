@@ -1,8 +1,12 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { ArrowLeft, Calculator, Beaker, BarChart3, CheckCircle } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const Methodology: React.FC = () => {
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   const calculations = [
     {
       title: 'CO₂ Emissions per Box',

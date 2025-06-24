@@ -1,8 +1,12 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { ArrowLeft, Package, CheckCircle, Truck, Users, Leaf, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const HowItWorksPage: React.FC = () => {
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   const steps = [
     {
       icon: Package,

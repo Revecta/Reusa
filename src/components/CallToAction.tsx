@@ -32,7 +32,7 @@ const CallToAction = () => {
               className="group bg-white hover:bg-gray-50 text-emerald-600 px-8 py-4 rounded-xl font-semibold text-lg transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
             >
               <Users className="inline-block mr-3 h-5 w-5" />
-              Start Reusing
+              Get Started
               <ArrowRight className="inline-block ml-3 h-5 w-5 group-hover:translate-x-1 transition-transform" />
             </button>
             <button className="group bg-emerald-700 hover:bg-emerald-800 text-white px-8 py-4 rounded-xl font-semibold text-lg border-2 border-white/20 hover:border-white/40 transition-all duration-300 transform hover:scale-105">

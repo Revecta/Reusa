@@ -1,8 +1,12 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { ArrowLeft, Leaf, TrendingUp, Package, Globe } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const ImpactData: React.FC = () => {
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   const impactStats = [
     {
       category: 'Environmental Impact',

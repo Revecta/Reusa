@@ -46,7 +46,7 @@ const Hero = () => {
                 onClick={() => setIsBoxFlowOpen(true)}
                 className="group bg-emerald-600 hover:bg-emerald-700 text-white px-8 py-4 rounded-xl font-semibold text-lg transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
               >
-                Start Saving Boxes
+                Get Started
                 <ChevronRight className="inline-block ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
               </button>
               <button 
