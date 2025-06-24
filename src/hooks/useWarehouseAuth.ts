@@ -91,7 +91,7 @@ export function useWarehouseAuth() {
 
   const signIn = async (email: string, password: string) => {
     if (!isSupabaseConfigured) {
-      return { data: null, error: { message: 'Database connection not configured. Please connect to Supabase to enable authentication.' } };
+      return { data: null, error: { message: 'Connessione al database non configurata. Connetti Supabase per abilitare l\'autenticazione.' } };
     }
     
     const { data, error } = await supabase.auth.signInWithPassword({
@@ -103,7 +103,7 @@ export function useWarehouseAuth() {
 
   const signUp = async (email: string, password: string, fullName?: string) => {
     if (!isSupabaseConfigured) {
-      return { data: null, error: { message: 'Database connection not configured. Please connect to Supabase to enable authentication.' } };
+      return { data: null, error: { message: 'Connessione al database non configurata. Connetti Supabase per abilitare l\'autenticazione.' } };
     }
     
     const { data, error } = await supabase.auth.signUp({
@@ -129,12 +129,17 @@ export function useWarehouseAuth() {
 
   const resetPassword = async (email: string) => {
     if (!isSupabaseConfigured) {
-      return { data: null, error: { message: 'Database connection not configured.' } };
+      return { data: null, error: { message: 'Connessione al database non configurata.' } };
     }
+    
+    console.log('Invio email di reset per:', email);
+    console.log('URL di redirect:', `${window.location.origin}/reset-password`);
     
     const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
       redirectTo: `${window.location.origin}/reset-password`,
     });
+    
+    console.log('Risultato reset password:', { data, error });
     return { data, error };
   };
 

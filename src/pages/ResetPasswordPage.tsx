@@ -7,10 +7,10 @@ import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 
 const resetPasswordSchema = z.object({
-  password: z.string().min(6, 'Password must be at least 6 characters'),
+  password: z.string().min(6, 'La password deve essere di almeno 6 caratteri'),
   confirmPassword: z.string(),
 }).refine((data) => data.password === data.confirmPassword, {
-  message: "Passwords don't match",
+  message: "Le password non corrispondono",
   path: ["confirmPassword"],
 });
 
@@ -27,6 +27,10 @@ const ResetPasswordPage: React.FC = () => {
   const { updatePassword, isSupabaseConfigured } = useAuth();
 
   useEffect(() => {
+    // Debug: mostra tutti i parametri URL
+    const allParams = Object.fromEntries(searchParams.entries());
+    console.log('Tutti i parametri URL:', allParams);
+
     // Check if we have the required parameters from Supabase
     const accessToken = searchParams.get('access_token');
     const refreshToken = searchParams.get('refresh_token');
@@ -34,7 +38,7 @@ const ResetPasswordPage: React.FC = () => {
     const error = searchParams.get('error');
     const errorDescription = searchParams.get('error_description');
 
-    console.log('URL Parameters:', { accessToken, refreshToken, type, error, errorDescription });
+    console.log('Parametri URL:', { accessToken, refreshToken, type, error, errorDescription });
 
     if (!isSupabaseConfigured) {
       setError('Supabase non è configurato. Il reset della password non è disponibile in modalità demo.');
@@ -69,11 +73,14 @@ const ResetPasswordPage: React.FC = () => {
     setError('');
 
     try {
+      console.log('Tentativo di aggiornamento password...');
       const { error } = await updatePassword(data.password);
 
       if (error) {
+        console.error('Errore aggiornamento password:', error);
         setError(error.message);
       } else {
+        console.log('Password aggiornata con successo');
         setSuccess(true);
         // Redirect to login after 3 seconds
         setTimeout(() => {
@@ -81,6 +88,7 @@ const ResetPasswordPage: React.FC = () => {
         }, 3000);
       }
     } catch (err) {
+      console.error('Errore imprevisto:', err);
       setError('Si è verificato un errore imprevisto');
     } finally {
       setLoading(false);
@@ -225,6 +233,16 @@ const ResetPasswordPage: React.FC = () => {
           >
             Torna alla Home
           </Link>
+        </div>
+
+        {/* Debug Info */}
+        <div className="mt-8 p-4 bg-gray-50 rounded-lg">
+          <h3 className="text-sm font-medium text-gray-700 mb-2">Debug Info:</h3>
+          <div className="text-xs text-gray-600 space-y-1">
+            <p>URL attuale: {window.location.href}</p>
+            <p>Parametri: {JSON.stringify(Object.fromEntries(searchParams.entries()))}</p>
+            <p>Supabase configurato: {isSupabaseConfigured ? 'Sì' : 'No'}</p>
+          </div>
         </div>
       </div>
     </div>

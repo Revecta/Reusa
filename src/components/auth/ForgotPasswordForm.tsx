@@ -2,11 +2,11 @@ import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Mail, ArrowLeft, Send } from 'lucide-react';
+import { Mail, ArrowLeft, Send, CheckCircle } from 'lucide-react';
 import { useWarehouseAuth } from '../../hooks/useWarehouseAuth';
 
 const forgotPasswordSchema = z.object({
-  email: z.string().email('Invalid email address'),
+  email: z.string().email('Indirizzo email non valido'),
 });
 
 type ForgotPasswordFormData = z.infer<typeof forgotPasswordSchema>;
@@ -36,15 +36,19 @@ const ForgotPasswordForm: React.FC<ForgotPasswordFormProps> = ({ onBack }) => {
     setError('');
 
     try {
+      console.log('Tentativo di reset password per:', data.email);
       const { error } = await resetPassword(data.email);
 
       if (error) {
+        console.error('Errore reset password:', error);
         setError(error.message);
       } else {
+        console.log('Email di reset inviata con successo');
         setSuccess(true);
       }
     } catch (err) {
-      setError('An unexpected error occurred');
+      console.error('Errore imprevisto:', err);
+      setError('Si è verificato un errore imprevisto');
     } finally {
       setLoading(false);
     }
@@ -53,19 +57,31 @@ const ForgotPasswordForm: React.FC<ForgotPasswordFormProps> = ({ onBack }) => {
   if (success) {
     return (
       <div className="w-full max-w-md mx-auto text-center">
+        <img 
+          src="/images/reusa-logo.svg" 
+          alt="Reusa Logo" 
+          className="h-16 w-auto mx-auto mb-6"
+        />
         <div className="bg-green-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-          <Send className="h-8 w-8 text-green-600" />
+          <CheckCircle className="h-8 w-8 text-green-600" />
         </div>
-        <h2 className="text-3xl font-bold text-gray-900 mb-4">Check Your Email</h2>
+        <h2 className="text-3xl font-bold text-gray-900 mb-4">Controlla la tua Email</h2>
         <p className="text-gray-600 mb-8">
-          We've sent a password reset link to your email address. Please check your inbox and follow the instructions to reset your password.
+          Abbiamo inviato un link per reimpostare la password al tuo indirizzo email. 
+          Controlla la tua casella di posta e segui le istruzioni per reimpostare la password.
         </p>
+        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
+          <p className="text-yellow-800 text-sm">
+            <strong>Nota:</strong> Se non ricevi l'email entro 5 minuti, controlla la cartella spam 
+            o riprova con un indirizzo email diverso.
+          </p>
+        </div>
         <button
           onClick={onBack}
-          className="text-blue-600 hover:text-blue-700 font-medium transition-colors flex items-center justify-center mx-auto"
+          className="text-emerald-600 hover:text-emerald-700 font-medium transition-colors flex items-center justify-center mx-auto"
         >
           <ArrowLeft className="h-4 w-4 mr-2" />
-          Back to Sign In
+          Torna al Login
         </button>
       </div>
     );
@@ -74,25 +90,30 @@ const ForgotPasswordForm: React.FC<ForgotPasswordFormProps> = ({ onBack }) => {
   return (
     <div className="w-full max-w-md mx-auto">
       <div className="text-center mb-8">
+        <img 
+          src="/images/reusa-logo.svg" 
+          alt="Reusa Logo" 
+          className="h-16 w-auto mx-auto mb-6"
+        />
         <div className="bg-orange-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
           <Mail className="h-8 w-8 text-orange-600" />
         </div>
-        <h2 className="text-3xl font-bold text-gray-900 mb-2">Forgot Password?</h2>
-        <p className="text-gray-600">Enter your email to receive a reset link</p>
+        <h2 className="text-3xl font-bold text-gray-900 mb-2">Password Dimenticata?</h2>
+        <p className="text-gray-600">Inserisci la tua email per ricevere il link di reset</p>
       </div>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            Email Address
+            Indirizzo Email
           </label>
           <div className="relative">
             <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
             <input
               type="email"
               {...register('email')}
-              className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors"
-              placeholder="your@email.com"
+              className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors"
+              placeholder="la-tua@email.com"
             />
           </div>
           {errors.email && (
@@ -109,14 +130,14 @@ const ForgotPasswordForm: React.FC<ForgotPasswordFormProps> = ({ onBack }) => {
         <button
           type="submit"
           disabled={!isValid || loading}
-          className="w-full bg-orange-600 hover:bg-orange-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white px-6 py-3 rounded-lg font-semibold transition-colors flex items-center justify-center"
+          className="w-full bg-emerald-600 hover:bg-emerald-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white px-6 py-3 rounded-lg font-semibold transition-colors flex items-center justify-center"
         >
           {loading ? (
             <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
           ) : (
             <>
               <Send className="h-5 w-5 mr-2" />
-              Send Reset Link
+              Invia Link di Reset
             </>
           )}
         </button>
@@ -125,10 +146,10 @@ const ForgotPasswordForm: React.FC<ForgotPasswordFormProps> = ({ onBack }) => {
       <div className="mt-6 text-center">
         <button
           onClick={onBack}
-          className="text-blue-600 hover:text-blue-700 font-medium transition-colors flex items-center justify-center mx-auto"
+          className="text-emerald-600 hover:text-emerald-700 font-medium transition-colors flex items-center justify-center mx-auto"
         >
           <ArrowLeft className="h-4 w-4 mr-2" />
-          Back to Sign In
+          Torna al Login
         </button>
       </div>
     </div>
