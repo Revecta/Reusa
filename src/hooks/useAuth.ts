@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { User, Session } from '@supabase/supabase-js';
-import { supabase } from '../lib/supabase';
+import { supabase, isSupabaseConfigured } from '../lib/supabase';
 
 export function useAuth() {
   const [user, setUser] = useState<User | null>(null);
@@ -9,6 +9,16 @@ export function useAuth() {
 
   useEffect(() => {
     let mounted = true;
+
+    // If Supabase is not configured, set loading to false immediately
+    if (!isSupabaseConfigured) {
+      if (mounted) {
+        setSession(null);
+        setUser(null);
+        setLoading(false);
+      }
+      return;
+    }
 
     // Get initial session
     const getInitialSession = async () => {
@@ -50,6 +60,10 @@ export function useAuth() {
   }, []);
 
   const signIn = async (email: string, password: string) => {
+    if (!isSupabaseConfigured) {
+      return { data: null, error: { message: 'Database connection not configured. Please connect to Supabase to enable authentication.' } };
+    }
+    
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
@@ -58,6 +72,10 @@ export function useAuth() {
   };
 
   const signUp = async (email: string, password: string) => {
+    if (!isSupabaseConfigured) {
+      return { data: null, error: { message: 'Database connection not configured. Please connect to Supabase to enable authentication.' } };
+    }
+    
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
@@ -66,6 +84,10 @@ export function useAuth() {
   };
 
   const signOut = async () => {
+    if (!isSupabaseConfigured) {
+      return { error: null };
+    }
+    
     const { error } = await supabase.auth.signOut();
     return { error };
   };
@@ -77,5 +99,6 @@ export function useAuth() {
     signIn,
     signUp,
     signOut,
+    isSupabaseConfigured,
   };
 }

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { X } from 'lucide-react';
+import { X, AlertCircle } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
-import { supabase } from '../../lib/supabase';
+import { supabase, isSupabaseConfigured } from '../../lib/supabase';
 import BoxDimensionsForm from './BoxDimensionsForm';
 import AuthModal from './AuthModal';
 import Summary from './Summary';
@@ -25,6 +25,11 @@ const BoxSavingFlow: React.FC<BoxSavingFlowProps> = ({ isOpen, onClose }) => {
   const handleFormSubmit = async (data: BoxDimensionsFormData & { volume: number }) => {
     setBoxData(data);
     
+    if (!isSupabaseConfigured) {
+      setError('Database connection not configured. Please connect to Supabase to save boxes.');
+      return;
+    }
+    
     if (!user) {
       setStep('auth');
       return;
@@ -34,7 +39,7 @@ const BoxSavingFlow: React.FC<BoxSavingFlowProps> = ({ isOpen, onClose }) => {
   };
 
   const saveBox = async (data: BoxDimensionsFormData & { volume: number }) => {
-    if (!user) return;
+    if (!user || !isSupabaseConfigured) return;
 
     setLoading(true);
     setError('');
@@ -92,6 +97,21 @@ const BoxSavingFlow: React.FC<BoxSavingFlowProps> = ({ isOpen, onClose }) => {
         >
           <X className="h-6 w-6 text-gray-600" />
         </button>
+
+        {/* Supabase Connection Warning */}
+        {!isSupabaseConfigured && (
+          <div className="mb-4 bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+            <div className="flex items-center">
+              <AlertCircle className="h-5 w-5 text-yellow-600 mr-2" />
+              <div>
+                <p className="text-yellow-800 font-medium">Database Not Connected</p>
+                <p className="text-yellow-700 text-sm">
+                  To save your box data, please connect to Supabase using the "Connect to Supabase" button in the top right.
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
 
         {error && (
           <div className="mb-4 bg-red-50 border border-red-200 rounded-lg p-4">

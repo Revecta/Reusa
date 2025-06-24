@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../hooks/useAuth';
-import { supabase } from '../lib/supabase';
-import { Package, Plus, Trash2, Leaf, TrendingUp } from 'lucide-react';
+import { supabase, isSupabaseConfigured } from '../lib/supabase';
+import { Package, Plus, Trash2, Leaf, TrendingUp, AlertCircle } from 'lucide-react';
 import { calculateCO2Savings } from '../utils/volumeCalculator';
 import BoxSavingFlow from '../components/BoxSavingFlow/BoxSavingFlow';
 import ConfirmDialog from '../components/ConfirmDialog';
@@ -16,7 +16,7 @@ interface Box {
 }
 
 const Dashboard: React.FC = () => {
-  const { user, loading: authLoading } = useAuth();
+  const { user, loading: authLoading, isSupabaseConfigured: authSupabaseConfigured } = useAuth();
   const [boxes, setBoxes] = useState<Box[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -27,7 +27,7 @@ const Dashboard: React.FC = () => {
   });
 
   const fetchBoxes = useCallback(async () => {
-    if (!user) return;
+    if (!user || !isSupabaseConfigured) return;
 
     setLoading(true);
     setError('');
@@ -54,7 +54,7 @@ const Dashboard: React.FC = () => {
   }, [user]);
 
   useEffect(() => {
-    if (user && !authLoading) {
+    if (user && !authLoading && isSupabaseConfigured) {
       fetchBoxes();
     } else if (!authLoading) {
       setLoading(false);
@@ -62,6 +62,11 @@ const Dashboard: React.FC = () => {
   }, [user, authLoading, fetchBoxes]);
 
   const handleDeleteBox = async (boxId: string) => {
+    if (!isSupabaseConfigured) {
+      setError('Database connection not configured');
+      return;
+    }
+
     try {
       const { error } = await supabase
         .from('boxes')
@@ -84,7 +89,7 @@ const Dashboard: React.FC = () => {
 
   const handleBoxFlowClose = useCallback(() => {
     setIsBoxFlowOpen(false);
-    if (user) {
+    if (user && isSupabaseConfigured) {
       fetchBoxes();
     }
   }, [user, fetchBoxes]);
@@ -121,6 +126,21 @@ const Dashboard: React.FC = () => {
             <h1 className="text-3xl font-bold text-gray-900 mb-2">My Dashboard</h1>
             <p className="text-gray-600">Manage your saved boxes and track your environmental impact</p>
           </div>
+
+          {/* Supabase Connection Warning */}
+          {!isSupabaseConfigured && (
+            <div className="mb-6 bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+              <div className="flex items-center">
+                <AlertCircle className="h-5 w-5 text-yellow-600 mr-2" />
+                <div>
+                  <p className="text-yellow-800 font-medium">Database Not Connected</p>
+                  <p className="text-yellow-700 text-sm">
+                    To save and manage your boxes, please connect to Supabase using the "Connect to Supabase" button in the top right.
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Stats Cards */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
@@ -174,7 +194,8 @@ const Dashboard: React.FC = () => {
               <h2 className="text-xl font-semibold text-gray-900">Your Saved Boxes</h2>
               <button
                 onClick={() => setIsBoxFlowOpen(true)}
-                className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg font-medium transition-colors flex items-center"
+                disabled={!isSupabaseConfigured}
+                className="bg-emerald-600 hover:bg-emerald-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white px-4 py-2 rounded-lg font-medium transition-colors flex items-center"
               >
                 <Plus className="h-4 w-4 mr-2" />
                 Add Box
@@ -191,13 +212,20 @@ const Dashboard: React.FC = () => {
                 <div className="text-center py-12">
                   <Package className="h-16 w-16 text-gray-300 mx-auto mb-4" />
                   <h3 className="text-lg font-medium text-gray-900 mb-2">No boxes saved yet</h3>
-                  <p className="text-gray-600 mb-6">Start by adding your first box to track your environmental impact</p>
-                  <button
-                    onClick={() => setIsBoxFlowOpen(true)}
-                    className="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-3 rounded-lg font-medium transition-colors"
-                  >
-                    Add Your First Box
-                  </button>
+                  <p className="text-gray-600 mb-6">
+                    {isSupabaseConfigured 
+                      ? "Start by adding your first box to track your environmental impact"
+                      : "Connect to Supabase to start saving and managing your boxes"
+                    }
+                  </p>
+                  {isSupabaseConfigured && (
+                    <button
+                      onClick={() => setIsBoxFlowOpen(true)}
+                      className="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-3 rounded-lg font-medium transition-colors"
+                    >
+                      Add Your First Box
+                    </button>
+                  )}
                 </div>
               ) : (
                 <div className="overflow-x-auto">

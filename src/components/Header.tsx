@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { Menu, X, Leaf, User, LogOut, LogIn } from 'lucide-react';
+import { Menu, X, Leaf, User, LogOut, LogIn, AlertCircle } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
+import { isSupabaseConfigured } from '../lib/supabase';
 import BoxSavingFlow from './BoxSavingFlow/BoxSavingFlow';
 import AuthModal from './BoxSavingFlow/AuthModal';
 
@@ -29,6 +30,21 @@ const Header = () => {
   return (
     <>
       <header className="bg-white shadow-sm sticky top-0 z-40">
+        {/* Supabase Connection Warning */}
+        {!isSupabaseConfigured && (
+          <div className="bg-yellow-50 border-b border-yellow-200">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2">
+              <div className="flex items-center justify-center text-center">
+                <AlertCircle className="h-4 w-4 text-yellow-600 mr-2 flex-shrink-0" />
+                <p className="text-yellow-800 text-sm">
+                  <span className="font-medium">Database not connected.</span> 
+                  <span className="hidden sm:inline"> Click "Connect to Supabase" in the top right to enable full functionality.</span>
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-4">
             {/* Logo */}
