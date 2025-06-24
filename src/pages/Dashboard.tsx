@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../hooks/useAuth';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
-import { Package, Plus, Trash2, Leaf, TrendingUp, AlertCircle } from 'lucide-react';
+import { Package, Plus, Trash2, Leaf, TrendingUp } from 'lucide-react';
 import { calculateCO2Savings } from '../utils/volumeCalculator';
 import BoxSavingFlow from '../components/BoxSavingFlow/BoxSavingFlow';
 import ConfirmDialog from '../components/ConfirmDialog';
@@ -28,23 +28,45 @@ const Dashboard: React.FC = () => {
   });
 
   const fetchBoxes = useCallback(async () => {
-    if (!user || !isSupabaseConfigured) return;
+    if (!user) return;
 
     setLoading(true);
     setError('');
     
     try {
-      const { data, error } = await supabase
-        .from('boxes')
-        .select('*')
-        .eq('user_id', user.id)
-        .order('created_at', { ascending: false });
+      if (isSupabaseConfigured) {
+        const { data, error } = await supabase
+          .from('boxes')
+          .select('*')
+          .eq('user_id', user.id)
+          .order('created_at', { ascending: false });
 
-      if (error) {
-        console.error('Error fetching boxes:', error);
-        setError(error.message);
+        if (error) {
+          console.error('Error fetching boxes:', error);
+          setError(error.message);
+        } else {
+          setBoxes(data || []);
+        }
       } else {
-        setBoxes(data || []);
+        // Mock data for demo
+        setBoxes([
+          {
+            id: '1',
+            width_cm: 30,
+            height_cm: 20,
+            depth_cm: 15,
+            volume_l: 9,
+            created_at: new Date().toISOString(),
+          },
+          {
+            id: '2',
+            width_cm: 40,
+            height_cm: 30,
+            depth_cm: 20,
+            volume_l: 24,
+            created_at: new Date(Date.now() - 86400000).toISOString(),
+          }
+        ]);
       }
     } catch (err) {
       console.error('Unexpected error:', err);
@@ -55,7 +77,7 @@ const Dashboard: React.FC = () => {
   }, [user]);
 
   useEffect(() => {
-    if (user && !authLoading && isSupabaseConfigured) {
+    if (user && !authLoading) {
       fetchBoxes();
     } else if (!authLoading) {
       setLoading(false);
@@ -63,22 +85,23 @@ const Dashboard: React.FC = () => {
   }, [user, authLoading, fetchBoxes]);
 
   const handleDeleteBox = async (boxId: string) => {
-    if (!isSupabaseConfigured) {
-      setError('Database connection not configured');
-      return;
-    }
-
     try {
-      const { error } = await supabase
-        .from('boxes')
-        .delete()
-        .eq('id', boxId)
-        .eq('user_id', user?.id);
+      if (isSupabaseConfigured) {
+        const { error } = await supabase
+          .from('boxes')
+          .delete()
+          .eq('id', boxId)
+          .eq('user_id', user?.id);
 
-      if (error) {
-        console.error('Error deleting box:', error);
-        setError(error.message);
+        if (error) {
+          console.error('Error deleting box:', error);
+          setError(error.message);
+        } else {
+          setBoxes(prevBoxes => prevBoxes.filter(box => box.id !== boxId));
+          setDeleteConfirm({ isOpen: false, boxId: null });
+        }
       } else {
+        // Mock deletion for demo
         setBoxes(prevBoxes => prevBoxes.filter(box => box.id !== boxId));
         setDeleteConfirm({ isOpen: false, boxId: null });
       }
@@ -90,7 +113,7 @@ const Dashboard: React.FC = () => {
 
   const handleBoxFlowClose = useCallback(() => {
     setIsBoxFlowOpen(false);
-    if (user && isSupabaseConfigured) {
+    if (user) {
       fetchBoxes();
     }
   }, [user, fetchBoxes]);
@@ -126,21 +149,6 @@ const Dashboard: React.FC = () => {
           <h1 className="text-3xl font-bold text-gray-900 mb-2">My Dashboard</h1>
           <p className="text-gray-600">Manage your saved boxes and track your environmental impact</p>
         </div>
-
-        {/* Supabase Connection Warning */}
-        {!isSupabaseConfigured && (
-          <div className="mb-6 bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-            <div className="flex items-center">
-              <AlertCircle className="h-5 w-5 text-yellow-600 mr-2" />
-              <div>
-                <p className="text-yellow-800 font-medium">Database Not Connected</p>
-                <p className="text-yellow-700 text-sm">
-                  To save and manage your boxes, please connect to Supabase using the "Connect to Supabase" button in the top right.
-                </p>
-              </div>
-            </div>
-          </div>
-        )}
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
@@ -194,8 +202,7 @@ const Dashboard: React.FC = () => {
             <h2 className="text-xl font-semibold text-gray-900">Your Saved Boxes</h2>
             <button
               onClick={() => setIsBoxFlowOpen(true)}
-              disabled={!isSupabaseConfigured}
-              className="bg-emerald-600 hover:bg-emerald-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white px-4 py-2 rounded-lg font-medium transition-colors flex items-center"
+              className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg font-medium transition-colors flex items-center"
             >
               <Plus className="h-4 w-4 mr-2" />
               Add Box
@@ -213,19 +220,14 @@ const Dashboard: React.FC = () => {
                 <Package className="h-16 w-16 text-gray-300 mx-auto mb-4" />
                 <h3 className="text-lg font-medium text-gray-900 mb-2">No boxes saved yet</h3>
                 <p className="text-gray-600 mb-6">
-                  {isSupabaseConfigured 
-                    ? "Start by adding your first box to track your environmental impact"
-                    : "Connect to Supabase to start saving and managing your boxes"
-                  }
+                  Start by adding your first box to track your environmental impact
                 </p>
-                {isSupabaseConfigured && (
-                  <button
-                    onClick={() => setIsBoxFlowOpen(true)}
-                    className="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-3 rounded-lg font-medium transition-colors"
-                  >
-                    Add Your First Box
-                  </button>
-                )}
+                <button
+                  onClick={() => setIsBoxFlowOpen(true)}
+                  className="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-3 rounded-lg font-medium transition-colors"
+                >
+                  Add Your First Box
+                </button>
               </div>
             ) : (
               <div className="overflow-x-auto">

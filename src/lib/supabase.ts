@@ -4,21 +4,27 @@ const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
 // Check if Supabase is configured
-export const isSupabaseConfigured = !!(supabaseUrl && supabaseAnonKey);
+export const isSupabaseConfigured = !!(supabaseUrl && supabaseAnonKey && supabaseUrl !== 'your_project_url' && supabaseAnonKey !== 'your_api_key');
 
 // Create a mock client for when Supabase is not configured
 const createMockClient = () => ({
   auth: {
     getSession: () => Promise.resolve({ data: { session: null }, error: null }),
     onAuthStateChange: () => ({ data: { subscription: { unsubscribe: () => {} } } }),
-    signInWithPassword: () => Promise.resolve({ data: null, error: { message: 'Supabase not configured' } }),
-    signUp: () => Promise.resolve({ data: null, error: { message: 'Supabase not configured' } }),
+    signInWithPassword: () => Promise.resolve({ data: null, error: { message: 'Demo mode - Supabase not configured' } }),
+    signUp: () => Promise.resolve({ data: null, error: { message: 'Demo mode - Supabase not configured' } }),
     signOut: () => Promise.resolve({ error: null }),
+    resetPasswordForEmail: () => Promise.resolve({ data: null, error: { message: 'Demo mode - Supabase not configured' } }),
   },
   from: () => ({
-    select: () => ({ eq: () => ({ order: () => Promise.resolve({ data: [], error: null }) }) }),
-    insert: () => Promise.resolve({ data: null, error: { message: 'Supabase not configured' } }),
-    delete: () => ({ eq: () => Promise.resolve({ data: null, error: { message: 'Supabase not configured' } }) }),
+    select: () => ({ 
+      eq: () => ({ 
+        order: () => Promise.resolve({ data: [], error: null }),
+        single: () => Promise.resolve({ data: null, error: null })
+      }) 
+    }),
+    insert: () => Promise.resolve({ data: null, error: { message: 'Demo mode - Supabase not configured' } }),
+    delete: () => ({ eq: () => Promise.resolve({ data: null, error: { message: 'Demo mode - Supabase not configured' } }) }),
   }),
 });
 

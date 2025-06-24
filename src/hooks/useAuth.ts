@@ -10,30 +10,28 @@ export function useAuth() {
   useEffect(() => {
     let mounted = true;
 
-    // If Supabase is not configured, set loading to false immediately
-    if (!isSupabaseConfigured) {
-      if (mounted) {
-        setSession(null);
-        setUser(null);
-        setLoading(false);
-      }
-      return;
-    }
-
     // Get initial session
     const getInitialSession = async () => {
       try {
-        const { data: { session }, error } = await supabase.auth.getSession();
-        if (mounted) {
-          if (error) {
-            console.error('Error getting session:', error);
+        if (isSupabaseConfigured) {
+          const { data: { session }, error } = await supabase.auth.getSession();
+          if (mounted) {
+            if (error) {
+              console.error('Error getting session:', error);
+            }
+            setSession(session);
+            setUser(session?.user ?? null);
           }
-          setSession(session);
-          setUser(session?.user ?? null);
-          setLoading(false);
+        } else {
+          // For demo purposes, we can simulate a logged-out state
+          if (mounted) {
+            setSession(null);
+            setUser(null);
+          }
         }
       } catch (error) {
         console.error('Error in getInitialSession:', error);
+      } finally {
         if (mounted) {
           setLoading(false);
         }
@@ -42,26 +40,32 @@ export function useAuth() {
 
     getInitialSession();
 
-    // Listen for auth changes
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (mounted) {
-        setSession(session);
-        setUser(session?.user ?? null);
-        setLoading(false);
-      }
-    });
+    // Listen for auth changes only if Supabase is configured
+    let subscription: any = null;
+    if (isSupabaseConfigured) {
+      const {
+        data: { subscription: authSubscription },
+      } = supabase.auth.onAuthStateChange((_event, session) => {
+        if (mounted) {
+          setSession(session);
+          setUser(session?.user ?? null);
+          setLoading(false);
+        }
+      });
+      subscription = authSubscription;
+    }
 
     return () => {
       mounted = false;
-      subscription.unsubscribe();
+      if (subscription) {
+        subscription.unsubscribe();
+      }
     };
   }, []);
 
   const signIn = async (email: string, password: string) => {
     if (!isSupabaseConfigured) {
-      return { data: null, error: { message: 'Database connection not configured. Please connect to Supabase to enable authentication.' } };
+      return { data: null, error: { message: 'Authentication is available when connected to Supabase. For now, you can explore the demo features.' } };
     }
     
     const { data, error } = await supabase.auth.signInWithPassword({
@@ -73,7 +77,7 @@ export function useAuth() {
 
   const signUp = async (email: string, password: string) => {
     if (!isSupabaseConfigured) {
-      return { data: null, error: { message: 'Database connection not configured. Please connect to Supabase to enable authentication.' } };
+      return { data: null, error: { message: 'Authentication is available when connected to Supabase. For now, you can explore the demo features.' } };
     }
     
     const { data, error } = await supabase.auth.signUp({
@@ -94,7 +98,7 @@ export function useAuth() {
 
   const resetPassword = async (email: string) => {
     if (!isSupabaseConfigured) {
-      return { data: null, error: { message: 'Database connection not configured. Please connect to Supabase to enable password reset.' } };
+      return { data: null, error: { message: 'Password reset is available when connected to Supabase.' } };
     }
     
     const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
