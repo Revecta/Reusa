@@ -10,12 +10,22 @@ import FAQ from './components/FAQ';
 import CallToAction from './components/CallToAction';
 import Footer from './components/Footer';
 import Dashboard from './pages/Dashboard';
+import AboutUs from './pages/AboutUs';
+import ContactUs from './pages/ContactUs';
+import HowItWorksPage from './pages/HowItWorksPage';
+import ImpactData from './pages/ImpactData';
+import Methodology from './pages/Methodology';
 
 function App() {
   return (
     <Router>
       <Routes>
         <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/about" element={<AboutUs />} />
+        <Route path="/contact" element={<ContactUs />} />
+        <Route path="/how-it-works" element={<HowItWorksPage />} />
+        <Route path="/impact-data" element={<ImpactData />} />
+        <Route path="/methodology" element={<Methodology />} />
         <Route path="/" element={
           <div className="min-h-screen bg-white">
             <Header />
