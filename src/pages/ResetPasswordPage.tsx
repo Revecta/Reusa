@@ -31,14 +31,23 @@ const ResetPasswordPage: React.FC = () => {
     const accessToken = searchParams.get('access_token');
     const refreshToken = searchParams.get('refresh_token');
     const type = searchParams.get('type');
+    const error = searchParams.get('error');
+    const errorDescription = searchParams.get('error_description');
+
+    console.log('URL Parameters:', { accessToken, refreshToken, type, error, errorDescription });
 
     if (!isSupabaseConfigured) {
-      setError('Supabase is not configured. Password reset is not available in demo mode.');
+      setError('Supabase non è configurato. Il reset della password non è disponibile in modalità demo.');
+      return;
+    }
+
+    if (error) {
+      setError(`Errore: ${errorDescription || error}`);
       return;
     }
 
     if (type !== 'recovery' || !accessToken) {
-      setError('Invalid or expired reset link. Please request a new password reset.');
+      setError('Link di reset non valido o scaduto. Richiedi un nuovo reset della password.');
       return;
     }
 
@@ -72,7 +81,7 @@ const ResetPasswordPage: React.FC = () => {
         }, 3000);
       }
     } catch (err) {
-      setError('An unexpected error occurred');
+      setError('Si è verificato un errore imprevisto');
     } finally {
       setLoading(false);
     }
@@ -85,15 +94,15 @@ const ResetPasswordPage: React.FC = () => {
           <div className="bg-red-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
             <AlertCircle className="h-8 w-8 text-red-600" />
           </div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">Service Not Available</h2>
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">Servizio Non Disponibile</h2>
           <p className="text-gray-600 mb-6">
-            Password reset is not available in demo mode. Please connect to Supabase to enable this functionality.
+            Il reset della password non è disponibile in modalità demo. Connetti Supabase per abilitare questa funzionalità.
           </p>
           <Link
             to="/"
             className="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors inline-block"
           >
-            Return to Home
+            Torna alla Home
           </Link>
         </div>
       </div>
@@ -107,15 +116,15 @@ const ResetPasswordPage: React.FC = () => {
           <div className="bg-green-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
             <CheckCircle className="h-8 w-8 text-green-600" />
           </div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">Password Updated!</h2>
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">Password Aggiornata!</h2>
           <p className="text-gray-600 mb-6">
-            Your password has been successfully updated. You will be redirected to the home page shortly.
+            La tua password è stata aggiornata con successo. Verrai reindirizzato alla home page a breve.
           </p>
           <Link
             to="/"
             className="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors inline-block"
           >
-            Continue to Home
+            Continua alla Home
           </Link>
         </div>
       </div>
@@ -132,8 +141,8 @@ const ResetPasswordPage: React.FC = () => {
             alt="Reusa Logo" 
             className="h-16 w-auto mx-auto mb-6"
           />
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">Reset Your Password</h2>
-          <p className="text-gray-600">Enter your new password below</p>
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">Reimposta la Password</h2>
+          <p className="text-gray-600">Inserisci la tua nuova password qui sotto</p>
         </div>
 
         {error && (
@@ -148,7 +157,7 @@ const ResetPasswordPage: React.FC = () => {
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              New Password
+              Nuova Password
             </label>
             <div className="relative">
               <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
@@ -173,7 +182,7 @@ const ResetPasswordPage: React.FC = () => {
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Confirm New Password
+              Conferma Nuova Password
             </label>
             <div className="relative">
               <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
@@ -204,7 +213,7 @@ const ResetPasswordPage: React.FC = () => {
             {loading ? (
               <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
             ) : (
-              'Update Password'
+              'Aggiorna Password'
             )}
           </button>
         </form>
@@ -214,7 +223,7 @@ const ResetPasswordPage: React.FC = () => {
             to="/"
             className="text-emerald-600 hover:text-emerald-700 font-medium transition-colors"
           >
-            Back to Home
+            Torna alla Home
           </Link>
         </div>
       </div>
