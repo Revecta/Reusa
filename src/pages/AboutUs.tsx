@@ -50,9 +50,9 @@ const AboutUs: React.FC = () => {
             <div className="flex-shrink-0">
               <div className="w-48 h-48 rounded-full bg-gray-300 overflow-hidden">
                 <img 
-                  src="https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg?auto=compress&cs=tinysrgb&w=400&h=400&fit=crop"
+                  src="/home/project/public/images/Michele_lazzari_portrait_reusalogolow.png"
                   alt="Michele Lazzari - Founder"
-                  className="w-full h-full object-cover filter grayscale"
+                  className="w-full h-full object-cover"
                 />
               </div>
             </div>
