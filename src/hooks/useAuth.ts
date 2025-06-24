@@ -84,7 +84,7 @@ export function useAuth() {
       email,
       password,
       options: {
-        emailRedirectTo: `${window.location.origin}/reset-password`,
+        emailRedirectTo: `https://reusa.eu/reset-password`,
       },
     });
     return { data, error };
@@ -98,7 +98,7 @@ export function useAuth() {
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: 'apple',
       options: {
-        redirectTo: `${window.location.origin}/`,
+        redirectTo: `https://reusa.eu/`,
       },
     });
     return { data, error };
@@ -118,9 +118,14 @@ export function useAuth() {
       return { data: null, error: { message: 'Password reset is available when connected to Supabase.' } };
     }
     
+    console.log('Invio email di reset per:', email);
+    console.log('URL di redirect:', 'https://reusa.eu/reset-password');
+    
     const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${window.location.origin}/reset-password`,
+      redirectTo: 'https://reusa.eu/reset-password',
     });
+    
+    console.log('Risultato reset password:', { data, error });
     return { data, error };
   };
 
@@ -129,9 +134,12 @@ export function useAuth() {
       return { data: null, error: { message: 'Password update is available when connected to Supabase.' } };
     }
     
+    console.log('Tentativo di aggiornamento password...');
     const { data, error } = await supabase.auth.updateUser({
       password: newPassword
     });
+    
+    console.log('Risultato aggiornamento password:', { data, error });
     return { data, error };
   };
 

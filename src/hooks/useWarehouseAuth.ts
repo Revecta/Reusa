@@ -113,6 +113,7 @@ export function useWarehouseAuth() {
         data: {
           full_name: fullName,
         },
+        emailRedirectTo: 'https://reusa.eu/',
       },
     });
     return { data, error };
@@ -133,10 +134,10 @@ export function useWarehouseAuth() {
     }
     
     console.log('Invio email di reset per:', email);
-    console.log('URL di redirect:', `${window.location.origin}/reset-password`);
+    console.log('URL di redirect:', 'https://reusa.eu/reset-password');
     
     const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${window.location.origin}/reset-password`,
+      redirectTo: 'https://reusa.eu/reset-password',
     });
     
     console.log('Risultato reset password:', { data, error });
