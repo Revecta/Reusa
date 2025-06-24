@@ -7,12 +7,12 @@ import { useAuth } from '../../hooks/useAuth';
 import AppleSignInButton from './AppleSignInButton';
 
 const signUpSchema = z.object({
-  fullName: z.string().min(2, 'Full name must be at least 2 characters'),
-  email: z.string().email('Invalid email address'),
-  password: z.string().min(6, 'Password must be at least 6 characters'),
+  fullName: z.string().min(2, 'Il nome completo deve essere di almeno 2 caratteri'),
+  email: z.string().email('Indirizzo email non valido'),
+  password: z.string().min(6, 'La password deve essere di almeno 6 caratteri'),
   confirmPassword: z.string(),
 }).refine((data) => data.password === data.confirmPassword, {
-  message: "Passwords don't match",
+  message: "Le password non corrispondono",
   path: ["confirmPassword"],
 });
 
@@ -28,6 +28,7 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ onSuccess, onSignIn }) => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState(false);
 
   const { signUp, signInWithApple, isSupabaseConfigured } = useAuth();
 
@@ -50,10 +51,11 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ onSuccess, onSignIn }) => {
       if (error) {
         setError(error.message);
       } else {
-        onSuccess?.();
+        setSuccess(true);
+        // Don't call onSuccess immediately, wait for email confirmation
       }
     } catch (err) {
-      setError('An unexpected error occurred');
+      setError('Si è verificato un errore imprevisto');
     } finally {
       setLoading(false);
     }
@@ -69,9 +71,45 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ onSuccess, onSignIn }) => {
       // Note: For OAuth, the redirect happens automatically
       // onSuccess will be called when the user returns
     } catch (err) {
-      setError('An unexpected error occurred with Apple Sign-In');
+      setError('Si è verificato un errore imprevisto con Apple Sign-In');
     }
   };
+
+  if (success) {
+    return (
+      <div className="w-full max-w-md mx-auto text-center">
+        <img 
+          src="/images/reusa-logo.svg" 
+          alt="Reusa Logo" 
+          className="h-16 w-auto mx-auto mb-6"
+        />
+        <div className="bg-green-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+          <Mail className="h-8 w-8 text-green-600" />
+        </div>
+        <h2 className="text-3xl font-bold text-gray-900 mb-4">Controlla la tua Email! 📧</h2>
+        <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-6 mb-6">
+          <p className="text-emerald-800 mb-4">
+            <strong>Registrazione quasi completata!</strong>
+          </p>
+          <p className="text-emerald-700 text-sm mb-4">
+            Ti abbiamo inviato un'email di benvenuto con un link di conferma. 
+            Clicca sul link nell'email per attivare il tuo account e iniziare a salvare scatole!
+          </p>
+          <div className="bg-white rounded-lg p-4 border border-emerald-200">
+            <p className="text-emerald-600 text-sm">
+              <strong>💡 Suggerimento:</strong> Se non vedi l'email, controlla la cartella spam o promozioni.
+            </p>
+          </div>
+        </div>
+        <button
+          onClick={onSignIn}
+          className="text-emerald-600 hover:text-emerald-700 font-medium transition-colors"
+        >
+          Torna al Login
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full max-w-md mx-auto">
@@ -81,8 +119,8 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ onSuccess, onSignIn }) => {
           alt="Reusa Logo" 
           className="h-16 w-auto mx-auto mb-4"
         />
-        <h2 className="text-3xl font-bold text-gray-900 mb-2">Create Account</h2>
-        <p className="text-gray-600">Join the Reusa community</p>
+        <h2 className="text-3xl font-bold text-gray-900 mb-2">Crea il tuo Account</h2>
+        <p className="text-gray-600">Unisciti alla comunità Reusa</p>
       </div>
 
       {/* Apple Sign-In Button */}
@@ -95,7 +133,7 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ onSuccess, onSignIn }) => {
               <div className="w-full border-t border-gray-300" />
             </div>
             <div className="relative flex justify-center text-sm">
-              <span className="px-2 bg-white text-gray-500">Or continue with email</span>
+              <span className="px-2 bg-white text-gray-500">Oppure continua con email</span>
             </div>
           </div>
         </div>
@@ -104,7 +142,7 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ onSuccess, onSignIn }) => {
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            Full Name
+            Nome Completo
           </label>
           <div className="relative">
             <User className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
@@ -112,7 +150,7 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ onSuccess, onSignIn }) => {
               type="text"
               {...register('fullName')}
               className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors"
-              placeholder="John Doe"
+              placeholder="Mario Rossi"
             />
           </div>
           {errors.fullName && (
@@ -122,7 +160,7 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ onSuccess, onSignIn }) => {
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            Email Address
+            Indirizzo Email
           </label>
           <div className="relative">
             <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
@@ -130,7 +168,7 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ onSuccess, onSignIn }) => {
               type="email"
               {...register('email')}
               className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors"
-              placeholder="your@email.com"
+              placeholder="mario@esempio.com"
             />
           </div>
           {errors.email && (
@@ -165,7 +203,7 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ onSuccess, onSignIn }) => {
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            Confirm Password
+            Conferma Password
           </label>
           <div className="relative">
             <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
@@ -204,7 +242,7 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ onSuccess, onSignIn }) => {
           ) : (
             <>
               <UserPlus className="h-5 w-5 mr-2" />
-              Create Account
+              Crea Account
             </>
           )}
         </button>
@@ -212,12 +250,12 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ onSuccess, onSignIn }) => {
 
       <div className="mt-6 text-center">
         <div className="text-gray-600">
-          Already have an account?{' '}
+          Hai già un account?{' '}
           <button
             onClick={onSignIn}
             className="text-emerald-600 hover:text-emerald-700 font-medium transition-colors"
           >
-            Sign in
+            Accedi
           </button>
         </div>
       </div>
