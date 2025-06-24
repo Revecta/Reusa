@@ -4,6 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Mail, Lock, Eye, EyeOff, LogIn } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
+import AppleSignInButton from './AppleSignInButton';
 
 const loginSchema = z.object({
   email: z.string().email('Invalid email address'),
@@ -23,7 +24,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onForgotPassword, onSi
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  const { signIn } = useAuth();
+  const { signIn, signInWithApple, isSupabaseConfigured } = useAuth();
 
   const {
     register,
@@ -53,6 +54,20 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onForgotPassword, onSi
     }
   };
 
+  const handleAppleSignIn = async () => {
+    setError('');
+    try {
+      const { error } = await signInWithApple();
+      if (error) {
+        setError(error.message);
+      }
+      // Note: For OAuth, the redirect happens automatically
+      // onSuccess will be called when the user returns
+    } catch (err) {
+      setError('An unexpected error occurred with Apple Sign-In');
+    }
+  };
+
   return (
     <div className="w-full max-w-md mx-auto">
       <div className="text-center mb-8">
@@ -64,6 +79,22 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onForgotPassword, onSi
         <h2 className="text-3xl font-bold text-gray-900 mb-2">Welcome Back</h2>
         <p className="text-gray-600">Sign in to your Reusa account</p>
       </div>
+
+      {/* Apple Sign-In Button */}
+      {isSupabaseConfigured && (
+        <div className="mb-6">
+          <AppleSignInButton onClick={handleAppleSignIn} />
+          
+          <div className="relative my-6">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-gray-300" />
+            </div>
+            <div className="relative flex justify-center text-sm">
+              <span className="px-2 bg-white text-gray-500">Or continue with email</span>
+            </div>
+          </div>
+        </div>
+      )}
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
         <div>

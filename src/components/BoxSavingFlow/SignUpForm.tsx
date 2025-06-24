@@ -4,6 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Mail, Lock, User, Eye, EyeOff, UserPlus } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
+import AppleSignInButton from './AppleSignInButton';
 
 const signUpSchema = z.object({
   fullName: z.string().min(2, 'Full name must be at least 2 characters'),
@@ -28,7 +29,7 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ onSuccess, onSignIn }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  const { signUp } = useAuth();
+  const { signUp, signInWithApple, isSupabaseConfigured } = useAuth();
 
   const {
     register,
@@ -58,6 +59,20 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ onSuccess, onSignIn }) => {
     }
   };
 
+  const handleAppleSignIn = async () => {
+    setError('');
+    try {
+      const { error } = await signInWithApple();
+      if (error) {
+        setError(error.message);
+      }
+      // Note: For OAuth, the redirect happens automatically
+      // onSuccess will be called when the user returns
+    } catch (err) {
+      setError('An unexpected error occurred with Apple Sign-In');
+    }
+  };
+
   return (
     <div className="w-full max-w-md mx-auto">
       <div className="text-center mb-8">
@@ -69,6 +84,22 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ onSuccess, onSignIn }) => {
         <h2 className="text-3xl font-bold text-gray-900 mb-2">Create Account</h2>
         <p className="text-gray-600">Join the Reusa community</p>
       </div>
+
+      {/* Apple Sign-In Button */}
+      {isSupabaseConfigured && (
+        <div className="mb-6">
+          <AppleSignInButton onClick={handleAppleSignIn} />
+          
+          <div className="relative my-6">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-gray-300" />
+            </div>
+            <div className="relative flex justify-center text-sm">
+              <span className="px-2 bg-white text-gray-500">Or continue with email</span>
+            </div>
+          </div>
+        </div>
+      )}
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
         <div>

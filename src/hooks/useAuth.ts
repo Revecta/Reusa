@@ -87,6 +87,20 @@ export function useAuth() {
     return { data, error };
   };
 
+  const signInWithApple = async () => {
+    if (!isSupabaseConfigured) {
+      return { data: null, error: { message: 'Apple Sign-In is available when connected to Supabase.' } };
+    }
+    
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider: 'apple',
+      options: {
+        redirectTo: `${window.location.origin}/`,
+      },
+    });
+    return { data, error };
+  };
+
   const signOut = async () => {
     if (!isSupabaseConfigured) {
       return { error: null };
@@ -124,6 +138,7 @@ export function useAuth() {
     loading,
     signIn,
     signUp,
+    signInWithApple,
     signOut,
     resetPassword,
     updatePassword,

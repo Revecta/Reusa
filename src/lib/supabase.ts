@@ -15,6 +15,7 @@ const createMockClient = () => ({
     signUp: () => Promise.resolve({ data: null, error: { message: 'Demo mode - Supabase not configured' } }),
     signOut: () => Promise.resolve({ error: null }),
     resetPasswordForEmail: () => Promise.resolve({ data: null, error: { message: 'Demo mode - Supabase not configured' } }),
+    signInWithOAuth: () => Promise.resolve({ data: null, error: { message: 'Demo mode - Supabase not configured' } }),
   },
   from: () => ({
     select: () => ({ 
