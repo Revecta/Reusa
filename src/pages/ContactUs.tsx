@@ -38,24 +38,25 @@ const ContactUs: React.FC = () => {
     setError('');
 
     try {
-      // Simulate sending email to lazzari@ik.me
-      // In a real implementation, you would use an email service or API
-      const emailBody = `
-Name: ${data.firstName} ${data.lastName}
-Email: ${data.email}
-Message: ${data.message}
-      `;
+      // Send email via our API endpoint
+      const response = await fetch('/api/send-contact-email', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
 
-      // Create mailto link
-      const mailtoLink = `mailto:lazzari@ik.me?subject=Contact from Reusa Website&body=${encodeURIComponent(emailBody)}`;
-      
-      // Open email client
-      window.location.href = mailtoLink;
-      
-      // Show success message
-      setSuccess(true);
-      reset();
+      const result = await response.json();
+
+      if (response.ok) {
+        setSuccess(true);
+        reset();
+      } else {
+        setError(result.error || 'Failed to send message. Please try again.');
+      }
     } catch (err) {
+      console.error('Error sending message:', err);
       setError('Failed to send message. Please try again.');
     } finally {
       setLoading(false);
@@ -108,7 +109,7 @@ Message: ${data.message}
                 <div className="flex items-center">
                   <CheckCircle className="h-5 w-5 text-green-600 mr-2" />
                   <p className="text-green-800">
-                    Your email client should open with your message. If not, please send your message manually to lazzari@ik.me
+                    Message sent successfully! We'll get back to you within 24 hours.
                   </p>
                 </div>
               </div>

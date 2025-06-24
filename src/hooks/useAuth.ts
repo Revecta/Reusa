@@ -107,6 +107,17 @@ export function useAuth() {
     return { data, error };
   };
 
+  const updatePassword = async (newPassword: string) => {
+    if (!isSupabaseConfigured) {
+      return { data: null, error: { message: 'Password update is available when connected to Supabase.' } };
+    }
+    
+    const { data, error } = await supabase.auth.updateUser({
+      password: newPassword
+    });
+    return { data, error };
+  };
+
   return {
     user,
     session,
@@ -115,6 +126,7 @@ export function useAuth() {
     signUp,
     signOut,
     resetPassword,
+    updatePassword,
     isSupabaseConfigured,
   };
 }

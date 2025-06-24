@@ -20,7 +20,7 @@ const ForgotPasswordForm: React.FC<ForgotPasswordFormProps> = ({ onBack }) => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
 
-  const { signIn } = useAuth(); // We'll add resetPassword to useAuth
+  const { resetPassword } = useAuth();
 
   const {
     register,
@@ -36,10 +36,13 @@ const ForgotPasswordForm: React.FC<ForgotPasswordFormProps> = ({ onBack }) => {
     setError('');
 
     try {
-      // For now, we'll simulate the reset password functionality
-      // In a real implementation, you would call supabase.auth.resetPasswordForEmail
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      setSuccess(true);
+      const { error } = await resetPassword(data.email);
+
+      if (error) {
+        setError(error.message);
+      } else {
+        setSuccess(true);
+      }
     } catch (err) {
       setError('An unexpected error occurred');
     } finally {

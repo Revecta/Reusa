@@ -15,6 +15,7 @@ import ContactUs from './pages/ContactUs';
 import HowItWorksPage from './pages/HowItWorksPage';
 import ImpactData from './pages/ImpactData';
 import Methodology from './pages/Methodology';
+import ResetPasswordPage from './pages/ResetPasswordPage';
 
 function App() {
   return (
@@ -26,6 +27,7 @@ function App() {
         <Route path="/how-it-works" element={<HowItWorksPage />} />
         <Route path="/impact-data" element={<ImpactData />} />
         <Route path="/methodology" element={<Methodology />} />
+        <Route path="/reset-password" element={<ResetPasswordPage />} />
         <Route path="/" element={
           <div className="min-h-screen bg-white">
             <Header />
