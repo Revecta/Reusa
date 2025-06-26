@@ -17,10 +17,16 @@ import ImpactData from './pages/ImpactData';
 import Methodology from './pages/Methodology';
 import ResetPasswordPage from './pages/ResetPasswordPage';
 
+// Warehouse/Inventory System
+import WarehouseLayout from './components/layout/WarehouseLayout';
+import WarehouseDashboard from './pages/warehouse/WarehouseDashboard';
+import AuthPage from './pages/auth/AuthPage';
+
 function App() {
   return (
     <Router>
       <Routes>
+        {/* Main Reusa App Routes */}
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/about" element={<AboutUs />} />
         <Route path="/contact" element={<ContactUs />} />
@@ -28,6 +34,15 @@ function App() {
         <Route path="/impact-data" element={<ImpactData />} />
         <Route path="/methodology" element={<Methodology />} />
         <Route path="/reset-password" element={<ResetPasswordPage />} />
+        
+        {/* Reusa Inventory System Routes */}
+        <Route path="/auth" element={<AuthPage />} />
+        <Route path="/warehouse" element={<WarehouseLayout />}>
+          <Route index element={<WarehouseDashboard />} />
+          {/* Add more warehouse routes here as needed */}
+        </Route>
+        
+        {/* Main Landing Page */}
         <Route path="/" element={
           <div className="min-h-screen bg-white">
             <Header />

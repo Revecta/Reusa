@@ -86,7 +86,7 @@ const WarehouseDashboard: React.FC = () => {
       title: 'Total Products',
       value: stats.totalProducts.toLocaleString(),
       icon: Package,
-      color: 'blue',
+      color: 'emerald',
       change: '+12%',
       changeType: 'increase' as const,
     },
@@ -110,17 +110,17 @@ const WarehouseDashboard: React.FC = () => {
       title: 'Recent Movements',
       value: stats.recentMovements.toString(),
       icon: TrendingUp,
-      color: 'purple',
+      color: 'blue',
       change: '+15%',
       changeType: 'increase' as const,
     },
   ];
 
   const colorClasses = {
-    blue: 'bg-blue-100 text-blue-600',
+    emerald: 'bg-emerald-100 text-emerald-600',
     green: 'bg-green-100 text-green-600',
     red: 'bg-red-100 text-red-600',
-    purple: 'bg-purple-100 text-purple-600',
+    blue: 'bg-blue-100 text-blue-600',
   };
 
   if (loading) {
@@ -141,8 +141,8 @@ const WarehouseDashboard: React.FC = () => {
     <div className="p-6">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Dashboard</h1>
-        <p className="text-gray-600">Welcome to your warehouse management system</p>
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">Inventory Dashboard</h1>
+        <p className="text-gray-600">Welcome to your Reusa inventory management system</p>
       </div>
 
       {/* Stats Cards */}
@@ -178,7 +178,7 @@ const WarehouseDashboard: React.FC = () => {
         <div className="bg-white rounded-xl shadow-sm p-6">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-xl font-semibold text-gray-900">Recent Activity</h2>
-            <button className="text-blue-600 hover:text-blue-700 text-sm font-medium">
+            <button className="text-emerald-600 hover:text-emerald-700 text-sm font-medium">
               View All
             </button>
           </div>
@@ -209,7 +209,7 @@ const WarehouseDashboard: React.FC = () => {
         <div className="bg-white rounded-xl shadow-sm p-6">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-xl font-semibold text-gray-900">Top Categories</h2>
-            <button className="text-blue-600 hover:text-blue-700 text-sm font-medium">
+            <button className="text-emerald-600 hover:text-emerald-700 text-sm font-medium">
               Manage
             </button>
           </div>
@@ -236,17 +236,17 @@ const WarehouseDashboard: React.FC = () => {
       <div className="mt-8 bg-white rounded-xl shadow-sm p-6">
         <h2 className="text-xl font-semibold text-gray-900 mb-6">Quick Actions</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <button className="flex items-center justify-center p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-colors group">
-            <Plus className="h-6 w-6 text-gray-400 group-hover:text-blue-500 mr-2" />
-            <span className="text-gray-600 group-hover:text-blue-600 font-medium">Add Product</span>
+          <button className="flex items-center justify-center p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-emerald-500 hover:bg-emerald-50 transition-colors group">
+            <Plus className="h-6 w-6 text-gray-400 group-hover:text-emerald-500 mr-2" />
+            <span className="text-gray-600 group-hover:text-emerald-600 font-medium">Add Product</span>
           </button>
           <button className="flex items-center justify-center p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-green-500 hover:bg-green-50 transition-colors group">
             <TrendingUp className="h-6 w-6 text-gray-400 group-hover:text-green-500 mr-2" />
             <span className="text-gray-600 group-hover:text-green-600 font-medium">Record Movement</span>
           </button>
-          <button className="flex items-center justify-center p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-purple-500 hover:bg-purple-50 transition-colors group">
-            <AlertTriangle className="h-6 w-6 text-gray-400 group-hover:text-purple-500 mr-2" />
-            <span className="text-gray-600 group-hover:text-purple-600 font-medium">View Alerts</span>
+          <button className="flex items-center justify-center p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-red-500 hover:bg-red-50 transition-colors group">
+            <AlertTriangle className="h-6 w-6 text-gray-400 group-hover:text-red-500 mr-2" />
+            <span className="text-gray-600 group-hover:text-red-600 font-medium">View Alerts</span>
           </button>
         </div>
       </div>

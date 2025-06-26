@@ -16,7 +16,7 @@ const AuthPage: React.FC = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600"></div>
       </div>
     );
   }
@@ -26,17 +26,19 @@ const AuthPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-emerald-50 to-green-100 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         {/* Header */}
         <div className="text-center mb-8">
           <div className="flex justify-center mb-4">
-            <div className="bg-blue-600 p-3 rounded-full">
-              <Package className="h-12 w-12 text-white" />
-            </div>
+            <img 
+              src="/images/reusa-logo.svg" 
+              alt="Reusa Logo" 
+              className="h-16 w-auto"
+            />
           </div>
           <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            Warehouse Management
+            Reusa Inventory
           </h1>
           <p className="text-gray-600">
             Professional inventory management system
@@ -82,7 +84,7 @@ const AuthPage: React.FC = () => {
 
         {/* Footer */}
         <div className="text-center mt-8 text-gray-500 text-sm">
-          <p>&copy; 2024 Warehouse Management System. All rights reserved.</p>
+          <p>&copy; 2024 Reusa Inventory System. All rights reserved.</p>
         </div>
       </div>
     </div>
