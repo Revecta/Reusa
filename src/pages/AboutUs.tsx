@@ -87,8 +87,12 @@ const AboutUs: React.FC = () => {
           <div className="bg-blue-50 rounded-2xl p-8">
             <div className="flex flex-col md:flex-row items-center gap-8">
               <div className="flex-shrink-0">
-                <div className="w-48 h-48 rounded-full bg-blue-200 overflow-hidden flex items-center justify-center">
-                  <div className="text-6xl text-blue-600">👨‍💻</div>
+                <div className="w-48 h-48 rounded-full bg-blue-200 overflow-hidden">
+                  <img 
+                    src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop&crop=face&auto=format&q=80"
+                    alt="Federico Collepardo - Chief Technology Officer"
+                    className="w-full h-full object-cover"
+                  />
                 </div>
               </div>
               <div className="flex-1 text-center md:text-left">
