@@ -68,22 +68,6 @@ export function useAuth() {
     return { data, error };
   };
 
-  const signInWithApple = async () => {
-    if (!isSupabaseConfigured) {
-      // Simulate Apple Sign-In for demo
-      console.log('Demo mode: Apple Sign-In simulation');
-      return { data: null, error: null };
-    }
-    
-    const { data, error } = await supabase.auth.signInWithOAuth({
-      provider: 'apple',
-      options: {
-        redirectTo: `https://reusa.eu/`,
-      },
-    });
-    return { data, error };
-  };
-
   const signInWithGoogle = async () => {
     if (!isSupabaseConfigured) {
       // Simulate Google Sign-In for demo
@@ -133,7 +117,6 @@ export function useAuth() {
     loading,
     signIn,
     signUp,
-    signInWithApple,
     signInWithGoogle,
     signOut,
     resetPassword,
