@@ -113,6 +113,22 @@ export function useWarehouseAuth() {
     return { data, error };
   };
 
+  const signInWithGoogle = async () => {
+    if (!isSupabaseConfigured) {
+      // Simulate Google Sign-In for demo
+      console.log('Demo mode: Google Sign-In simulation');
+      return { data: null, error: null };
+    }
+    
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: `https://reusa.eu/warehouse`,
+      },
+    });
+    return { data, error };
+  };
+
   const signOut = async () => {
     const { error } = await supabase.auth.signOut();
     return { error };
@@ -150,6 +166,7 @@ export function useWarehouseAuth() {
     loading,
     signIn,
     signUp,
+    signInWithGoogle,
     signOut,
     resetPassword,
     hasPermission,

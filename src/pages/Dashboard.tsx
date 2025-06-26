@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../hooks/useAuth';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
-import { Package, Plus, Recycle, Leaf, TrendingUp, CheckCircle } from 'lucide-react';
+import { Package, Plus, Recycle, Leaf, TrendingUp, CheckCircle, Trash2 } from 'lucide-react';
 import { calculateCO2Savings } from '../utils/volumeCalculator';
 import BoxSavingFlow from '../components/BoxSavingFlow/BoxSavingFlow';
 import ConfirmDialog from '../components/ConfirmDialog';
@@ -24,6 +24,10 @@ const Dashboard: React.FC = () => {
   const [error, setError] = useState('');
   const [isBoxFlowOpen, setIsBoxFlowOpen] = useState(false);
   const [reuseConfirm, setReuseConfirm] = useState<{ isOpen: boolean; boxId: string | null }>({
+    isOpen: false,
+    boxId: null,
+  });
+  const [deleteConfirm, setDeleteConfirm] = useState<{ isOpen: boolean; boxId: string | null }>({
     isOpen: false,
     boxId: null,
   });
@@ -133,6 +137,33 @@ const Dashboard: React.FC = () => {
     } catch (err) {
       console.error('Unexpected error:', err);
       setError('Failed to mark box as reused');
+    }
+  };
+
+  const handleDeleteBox = async (boxId: string) => {
+    try {
+      if (isSupabaseConfigured) {
+        const { error } = await supabase
+          .from('boxes')
+          .delete()
+          .eq('id', boxId)
+          .eq('user_id', user?.id);
+
+        if (error) {
+          console.error('Error deleting box:', error);
+          setError(error.message);
+        } else {
+          setBoxes(prevBoxes => prevBoxes.filter(box => box.id !== boxId));
+          setDeleteConfirm({ isOpen: false, boxId: null });
+        }
+      } else {
+        // Mock deletion for demo
+        setBoxes(prevBoxes => prevBoxes.filter(box => box.id !== boxId));
+        setDeleteConfirm({ isOpen: false, boxId: null });
+      }
+    } catch (err) {
+      console.error('Unexpected error:', err);
+      setError('Failed to delete box');
     }
   };
 
@@ -344,20 +375,29 @@ const Dashboard: React.FC = () => {
                           {new Date(box.created_at).toLocaleDateString()}
                         </td>
                         <td className="py-4 px-4">
-                          {!box.reused ? (
+                          <div className="flex items-center space-x-2">
+                            {!box.reused ? (
+                              <button
+                                onClick={() => setReuseConfirm({ isOpen: true, boxId: box.id })}
+                                className="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1 rounded-lg text-sm font-medium transition-colors flex items-center"
+                                title="Mark as reused"
+                              >
+                                <Recycle className="h-4 w-4 mr-1" />
+                                Reusa
+                              </button>
+                            ) : (
+                              <span className="text-green-600 text-sm font-medium">
+                                ✅ Reused
+                              </span>
+                            )}
                             <button
-                              onClick={() => setReuseConfirm({ isOpen: true, boxId: box.id })}
-                              className="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1 rounded-lg text-sm font-medium transition-colors flex items-center"
-                              title="Mark as reused"
+                              onClick={() => setDeleteConfirm({ isOpen: true, boxId: box.id })}
+                              className="text-red-600 hover:text-red-800 transition-colors p-1"
+                              title="Delete box"
                             >
-                              <Recycle className="h-4 w-4 mr-1" />
-                              Reusa
+                              <Trash2 className="h-4 w-4" />
                             </button>
-                          ) : (
-                            <span className="text-green-600 text-sm font-medium">
-                              ✅ Reused
-                            </span>
-                          )}
+                          </div>
                         </td>
                       </tr>
                     ))}
@@ -383,6 +423,17 @@ const Dashboard: React.FC = () => {
         confirmText="Sì, l'ho riutilizzata!"
         cancelText="Annulla"
         variant="info"
+      />
+
+      <ConfirmDialog
+        isOpen={deleteConfirm.isOpen}
+        title="Delete Box"
+        message="Are you sure you want to delete this box? This action cannot be undone and will remove it from your statistics."
+        onConfirm={() => deleteConfirm.boxId && handleDeleteBox(deleteConfirm.boxId)}
+        onCancel={() => setDeleteConfirm({ isOpen: false, boxId: null })}
+        confirmText="Delete"
+        cancelText="Cancel"
+        variant="danger"
       />
     </DashboardLayout>
   );

@@ -79,6 +79,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onForgotPassword, onSi
         <SocialLoginButtons 
           onSuccess={handleSocialSuccess}
           onError={handleSocialError}
+          useWarehouse={false}
         />
         
         <div className="relative my-6">

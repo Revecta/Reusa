@@ -65,11 +65,11 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onForgotPassword, onSi
   return (
     <div className="w-full max-w-md mx-auto">
       <div className="text-center mb-8">
-        <div className="bg-blue-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-          <LogIn className="h-8 w-8 text-blue-600" />
+        <div className="bg-emerald-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+          <LogIn className="h-8 w-8 text-emerald-600" />
         </div>
         <h2 className="text-3xl font-bold text-gray-900 mb-2">Welcome Back</h2>
-        <p className="text-gray-600">Sign in to your warehouse account</p>
+        <p className="text-gray-600">Sign in to your Reusa account</p>
       </div>
 
       {/* Social Login Buttons */}
@@ -77,6 +77,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onForgotPassword, onSi
         <SocialLoginButtons 
           onSuccess={handleSocialSuccess}
           onError={handleSocialError}
+          useWarehouse={true}
         />
         
         <div className="relative my-6">
@@ -99,7 +100,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onForgotPassword, onSi
             <input
               type="email"
               {...register('email')}
-              className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+              className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors"
               placeholder="your@email.com"
             />
           </div>
@@ -117,7 +118,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onForgotPassword, onSi
             <input
               type={showPassword ? 'text' : 'password'}
               {...register('password')}
-              className="w-full pl-10 pr-12 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+              className="w-full pl-10 pr-12 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors"
               placeholder="••••••••"
             />
             <button
@@ -142,7 +143,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onForgotPassword, onSi
         <button
           type="submit"
           disabled={!isValid || loading}
-          className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white px-6 py-3 rounded-lg font-semibold transition-colors flex items-center justify-center"
+          className="w-full bg-emerald-600 hover:bg-emerald-700 disabled:bg-gray-300 disabled:cursor-not-allowed text-white px-6 py-3 rounded-lg font-semibold transition-colors flex items-center justify-center"
         >
           {loading ? (
             <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
@@ -158,7 +159,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onForgotPassword, onSi
       <div className="mt-6 text-center space-y-3">
         <button
           onClick={onForgotPassword}
-          className="text-blue-600 hover:text-blue-700 font-medium transition-colors"
+          className="text-emerald-600 hover:text-emerald-700 font-medium transition-colors"
         >
           Forgot your password?
         </button>
@@ -166,7 +167,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onForgotPassword, onSi
           Don't have an account?{' '}
           <button
             onClick={onSignUp}
-            className="text-blue-600 hover:text-blue-700 font-medium transition-colors"
+            className="text-emerald-600 hover:text-emerald-700 font-medium transition-colors"
           >
             Sign up
           </button>
