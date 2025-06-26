@@ -3,10 +3,10 @@ import { createClient } from '@supabase/supabase-js';
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
-// Force Supabase to be unconfigured for main app to use local cache
-export const isSupabaseConfigured = false;
+// Check if Supabase is configured
+export const isSupabaseConfigured = !!(supabaseUrl && supabaseAnonKey && supabaseUrl !== 'your_project_url' && supabaseAnonKey !== 'your_api_key');
 
-// Create a comprehensive mock client with localStorage persistence
+// Create a comprehensive mock client with localStorage persistence for fallback
 const createMockClient = () => {
   // Local storage keys
   const STORAGE_KEYS = {
@@ -306,7 +306,22 @@ const createMockClient = () => {
   };
 };
 
-export const supabase = createMockClient() as any;
+export const supabase = isSupabaseConfigured 
+  ? createClient(supabaseUrl, supabaseAnonKey, {
+      auth: {
+        persistSession: true,
+        autoRefreshToken: true,
+      },
+      db: {
+        schema: 'public',
+      },
+      global: {
+        headers: {
+          'x-my-custom-header': 'reusa-app',
+        },
+      },
+    })
+  : createMockClient() as any;
 
 export type Database = {
   public: {

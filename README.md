@@ -8,26 +8,35 @@ Eliminare gli sprechi di cartone creando una piattaforma che connette chi ha sca
 
 ## ✨ Caratteristiche Principali
 
+### 📦 **App Principale Reusa**
 - **Calcolatore CO₂**: Calcola l'impatto ambientale del riutilizzo delle scatole
 - **Gestione Scatole**: Salva e gestisci le dimensioni delle tue scatole
-- **Dashboard Personale**: Traccia il tuo impatto ambientale
-- **Autenticazione Sicura**: Sistema di login con Supabase
-- **Design Responsive**: Ottimizzato per tutti i dispositivi
-- **Email Personalizzate**: Template email con branding Reusa
+- **Tracciamento Riutilizzo**: Marca le scatole come riutilizzate e traccia l'impatto
+- **Dashboard Personale**: Statistiche dettagliate del tuo impatto ambientale
+- **Autenticazione Sicura**: Sistema di login con Google Sign-In
+- **Cache Locale**: Dati persistenti anche offline per demo sicure
+
+### 🏢 **Sistema Inventario Reusa**
+- **Gestione Prodotti**: Catalogo completo con dimensioni e ubicazioni
+- **Movimenti Stock**: Tracciamento IN/OUT/TRANSFER/ADJUSTMENT
+- **Categorie e Ubicazioni**: Organizzazione strutturata del magazzino
+- **Dashboard Analytics**: Statistiche e KPI del magazzino
+- **Sistema Ruoli**: ADMIN/MANAGER/OPERATOR/VIEWER
+- **Notifiche**: Avvisi per stock basso e movimenti
 
 ## 🚀 Tecnologie Utilizzate
 
 - **Frontend**: React 18, TypeScript, Tailwind CSS
-- **Backend**: Supabase (Database, Auth, Email)
+- **Backend**: Supabase (Database, Auth, Real-time)
 - **Build Tool**: Vite
 - **Routing**: React Router DOM
 - **Forms**: React Hook Form + Zod validation
 - **Icons**: Lucide React
-- **Email**: Nodemailer + Custom HTML Templates
+- **Cache**: localStorage per persistenza offline
 
-## 📧 Sistema Email
+## 📧 Sistema Email Personalizzato
 
-Il progetto include template email personalizzati con il branding Reusa:
+Template email professionali con branding Reusa:
 
 ### Template Disponibili
 
@@ -46,37 +55,13 @@ Il progetto include template email personalizzati con il branding Reusa:
    - Formattazione professionale
    - Informazioni del mittente organizzate
 
-### Configurazione Email Supabase
-
-Per configurare le email personalizzate in Supabase:
-
-1. Vai su **Authentication > Email Templates** nel dashboard Supabase
-2. Configura i template usando l'HTML da `src/utils/emailTemplates.ts`
-3. Imposta le variabili:
-   - `{{ .Email }}` - Email dell'utente
-   - `{{ .ConfirmationURL }}` - URL di conferma
-   - `{{ .SiteURL }}` - URL del sito (https://reusa.eu)
-
-### Configurazione SMTP
-
-Aggiungi queste variabili d'ambiente:
-
-```env
-SMTP_HOST=smtp.gmail.com
-SMTP_PORT=587
-SMTP_SECURE=false
-SMTP_USER=your_email@gmail.com
-SMTP_PASS=your_app_password
-SMTP_FROM=noreply@reusa.eu
-```
-
 ## 🛠️ Setup del Progetto
 
 ### Prerequisiti
 
 - Node.js 18+
-- Account Supabase
-- Account Gmail per SMTP (opzionale)
+- Account Supabase (opzionale per demo)
+- Account Google per OAuth (opzionale)
 
 ### Installazione
 
@@ -107,22 +92,27 @@ SMTP_FROM=noreply@reusa.eu
    npm run dev
    ```
 
-### Setup Database Supabase
+### Setup Supabase (Opzionale)
 
 1. Crea un nuovo progetto su [Supabase](https://supabase.com)
 2. Esegui le migrazioni dal folder `supabase/migrations/`
 3. Configura le email templates nel dashboard
 4. Imposta le variabili d'ambiente
 
+**Nota**: L'app funziona completamente anche senza Supabase usando la cache locale!
+
 ## 📊 Schema Database
 
-Il progetto utilizza le seguenti tabelle principali:
+### Tabelle Principali
 
+#### App Reusa
 - `boxes` - Dimensioni e volumi delle scatole salvate
-- `profiles` - Profili utente estesi
-- `categories` - Categorie per warehouse management
-- `locations` - Posizioni nel magazzino
-- `products` - Prodotti del sistema warehouse
+
+#### Sistema Inventario
+- `profiles` - Profili utente estesi con ruoli
+- `categories` - Categorie prodotti
+- `locations` - Ubicazioni magazzino
+- `products` - Prodotti del sistema
 - `movements` - Movimenti di stock
 - `notifications` - Notifiche utente
 
@@ -177,7 +167,53 @@ npm run build
 - Produzione: `https://reusa.eu`
 - Staging: `https://staging.reusa.eu`
 
-## 📝 Contribuire
+## 📱 Come Usare
+
+### App Principale (`/`)
+1. **Registrazione/Login**: Crea account o accedi
+2. **Aggiungi Scatole**: Inserisci dimensioni delle tue scatole
+3. **Traccia Riutilizzo**: Marca le scatole come riutilizzate
+4. **Monitora Impatto**: Visualizza statistiche CO₂ risparmiata
+
+### Sistema Inventario (`/auth` → `/warehouse`)
+1. **Accesso**: Login al sistema inventario
+2. **Gestione Prodotti**: Aggiungi e modifica prodotti
+3. **Movimenti**: Registra entrate/uscite
+4. **Analytics**: Monitora KPI del magazzino
+
+## 🔧 Funzionalità Avanzate
+
+### Cache Locale
+- **Persistenza**: Dati salvati in localStorage
+- **Offline**: Funziona senza connessione internet
+- **Sincronizzazione**: Compatibile con backend Supabase
+
+### Autenticazione
+- **Google OAuth**: Login rapido con Google
+- **Email/Password**: Registrazione tradizionale
+- **Demo Mode**: Funziona anche senza backend
+
+### Sicurezza
+- **RLS**: Row Level Security su Supabase
+- **Ruoli**: Sistema di permessi granulare
+- **Validazione**: Input validation con Zod
+
+## 📈 Metriche e Analytics
+
+### KPI Tracciati
+- Numero totale scatole salvate
+- Percentuale di riutilizzo
+- CO₂ totale risparmiata
+- Volume totale gestito
+- Crescita mensile
+
+### Dashboard
+- Grafici interattivi
+- Statistiche in tempo reale
+- Confronti temporali
+- Export dati
+
+## 🤝 Contribuire
 
 1. Fork del progetto
 2. Crea un branch per la feature (`git checkout -b feature/AmazingFeature`)
@@ -192,6 +228,7 @@ Questo progetto è sotto licenza MIT. Vedi il file `LICENSE` per i dettagli.
 ## 👥 Team
 
 - **Michele Lazzari** - Founder & CEO - [lazzari@ik.me](mailto:lazzari@ik.me)
+- **Federico Collepardo** - Chief Technology Officer
 
 ## 🔗 Links
 
@@ -202,3 +239,12 @@ Questo progetto è sotto licenza MIT. Vedi il file `LICENSE` per i dettagli.
 ---
 
 **Reusa** - Reimmagina la spedizione. Rivivi ogni scatola. 📦♻️
+
+### 🎯 Per la Startup
+
+Questa piattaforma è pronta per:
+- **Demo ai clienti**: Funziona offline con dati realistici
+- **Presentazioni**: Design professionale e UX fluida
+- **Scalabilità**: Facile passaggio a backend reale
+- **Vendite**: Due prodotti in uno (B2C + B2B)
+- **Investitori**: Metriche e analytics integrate
