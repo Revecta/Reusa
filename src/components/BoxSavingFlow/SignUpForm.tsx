@@ -4,7 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Mail, Lock, User, Eye, EyeOff, UserPlus } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
-import AppleSignInButton from './AppleSignInButton';
+import SocialLoginButtons from '../auth/SocialLoginButtons';
 
 const signUpSchema = z.object({
   fullName: z.string().min(2, 'Il nome completo deve essere di almeno 2 caratteri'),
@@ -30,7 +30,7 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ onSuccess, onSignIn }) => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
 
-  const { signUp, signInWithApple, isSupabaseConfigured } = useAuth();
+  const { signUp, isSupabaseConfigured } = useAuth();
 
   const {
     register,
@@ -61,18 +61,12 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ onSuccess, onSignIn }) => {
     }
   };
 
-  const handleAppleSignIn = async () => {
-    setError('');
-    try {
-      const { error } = await signInWithApple();
-      if (error) {
-        setError(error.message);
-      }
-      // Note: For OAuth, the redirect happens automatically
-      // onSuccess will be called when the user returns
-    } catch (err) {
-      setError('Si è verificato un errore imprevisto con Apple Sign-In');
-    }
+  const handleSocialSuccess = () => {
+    onSuccess?.();
+  };
+
+  const handleSocialError = (errorMessage: string) => {
+    setError(errorMessage);
   };
 
   if (success) {
@@ -123,21 +117,22 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ onSuccess, onSignIn }) => {
         <p className="text-gray-600">Unisciti alla comunità Reusa</p>
       </div>
 
-      {/* Apple Sign-In Button */}
-      {isSupabaseConfigured && (
-        <div className="mb-6">
-          <AppleSignInButton onClick={handleAppleSignIn} />
-          
-          <div className="relative my-6">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-gray-300" />
-            </div>
-            <div className="relative flex justify-center text-sm">
-              <span className="px-2 bg-white text-gray-500">Oppure continua con email</span>
-            </div>
+      {/* Social Login Buttons */}
+      <div className="mb-6">
+        <SocialLoginButtons 
+          onSuccess={handleSocialSuccess}
+          onError={handleSocialError}
+        />
+        
+        <div className="relative my-6">
+          <div className="absolute inset-0 flex items-center">
+            <div className="w-full border-t border-gray-300" />
+          </div>
+          <div className="relative flex justify-center text-sm">
+            <span className="px-2 bg-white text-gray-500">Oppure continua con email</span>
           </div>
         </div>
-      )}
+      </div>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
         <div>

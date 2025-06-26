@@ -70,11 +70,29 @@ export function useAuth() {
 
   const signInWithApple = async () => {
     if (!isSupabaseConfigured) {
-      return { data: null, error: { message: 'Apple Sign-In is available when connected to Supabase.' } };
+      // Simulate Apple Sign-In for demo
+      console.log('Demo mode: Apple Sign-In simulation');
+      return { data: null, error: null };
     }
     
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: 'apple',
+      options: {
+        redirectTo: `https://reusa.eu/`,
+      },
+    });
+    return { data, error };
+  };
+
+  const signInWithGoogle = async () => {
+    if (!isSupabaseConfigured) {
+      // Simulate Google Sign-In for demo
+      console.log('Demo mode: Google Sign-In simulation');
+      return { data: null, error: null };
+    }
+    
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
       options: {
         redirectTo: `https://reusa.eu/`,
       },
@@ -116,6 +134,7 @@ export function useAuth() {
     signIn,
     signUp,
     signInWithApple,
+    signInWithGoogle,
     signOut,
     resetPassword,
     updatePassword,

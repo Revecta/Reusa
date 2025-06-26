@@ -162,6 +162,31 @@ const createMockClient = () => {
       
       signInWithOAuth: ({ provider }: { provider: string }) => {
         console.log('Demo mode: OAuth sign-in with', provider);
+        
+        // Simulate successful OAuth login for demo
+        currentUser = {
+          id: 'demo-user-id',
+          email: `demo@${provider}.com`,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+          email_confirmed_at: new Date().toISOString(),
+          app_metadata: {},
+          user_metadata: { provider }
+        };
+        
+        const session = {
+          user: currentUser,
+          access_token: 'demo-token',
+          refresh_token: 'demo-refresh',
+          expires_at: Date.now() + 3600000,
+          token_type: 'bearer'
+        };
+
+        // Notify listeners
+        setTimeout(() => {
+          authListeners.forEach(listener => listener('SIGNED_IN', session));
+        }, 100);
+
         return Promise.resolve({ 
           data: { url: null, provider }, 
           error: null 

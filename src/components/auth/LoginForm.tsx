@@ -4,6 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Mail, Lock, Eye, EyeOff, LogIn } from 'lucide-react';
 import { useWarehouseAuth } from '../../hooks/useWarehouseAuth';
+import SocialLoginButtons from './SocialLoginButtons';
 
 const loginSchema = z.object({
   email: z.string().email('Invalid email address'),
@@ -53,6 +54,14 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onForgotPassword, onSi
     }
   };
 
+  const handleSocialSuccess = () => {
+    onSuccess?.();
+  };
+
+  const handleSocialError = (errorMessage: string) => {
+    setError(errorMessage);
+  };
+
   return (
     <div className="w-full max-w-md mx-auto">
       <div className="text-center mb-8">
@@ -61,6 +70,23 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onForgotPassword, onSi
         </div>
         <h2 className="text-3xl font-bold text-gray-900 mb-2">Welcome Back</h2>
         <p className="text-gray-600">Sign in to your warehouse account</p>
+      </div>
+
+      {/* Social Login Buttons */}
+      <div className="mb-6">
+        <SocialLoginButtons 
+          onSuccess={handleSocialSuccess}
+          onError={handleSocialError}
+        />
+        
+        <div className="relative my-6">
+          <div className="absolute inset-0 flex items-center">
+            <div className="w-full border-t border-gray-300" />
+          </div>
+          <div className="relative flex justify-center text-sm">
+            <span className="px-2 bg-white text-gray-500">Or continue with email</span>
+          </div>
+        </div>
       </div>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
