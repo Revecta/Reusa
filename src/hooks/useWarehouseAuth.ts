@@ -12,16 +12,6 @@ export function useWarehouseAuth() {
   useEffect(() => {
     let mounted = true;
 
-    if (!isSupabaseConfigured) {
-      if (mounted) {
-        setSession(null);
-        setUser(null);
-        setProfile(null);
-        setLoading(false);
-      }
-      return;
-    }
-
     const getInitialSession = async () => {
       try {
         const { data: { session }, error } = await supabase.auth.getSession();
@@ -48,16 +38,28 @@ export function useWarehouseAuth() {
 
     const fetchProfile = async (userId: string) => {
       try {
-        const { data, error } = await supabase
-          .from('profiles')
-          .select('*')
-          .eq('id', userId)
-          .single();
+        if (isSupabaseConfigured) {
+          const { data, error } = await supabase
+            .from('profiles')
+            .select('*')
+            .eq('id', userId)
+            .single();
 
-        if (error) {
-          console.error('Error fetching profile:', error);
+          if (error) {
+            console.error('Error fetching profile:', error);
+          } else {
+            setProfile(data);
+          }
         } else {
-          setProfile(data);
+          // Mock profile for demo
+          setProfile({
+            id: userId,
+            email: 'demo@example.com',
+            full_name: 'Demo User',
+            role: 'ADMIN',
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+          });
         }
       } catch (error) {
         console.error('Error fetching profile:', error);
@@ -90,10 +92,6 @@ export function useWarehouseAuth() {
   }, []);
 
   const signIn = async (email: string, password: string) => {
-    if (!isSupabaseConfigured) {
-      return { data: null, error: { message: 'Connessione al database non configurata. Connetti Supabase per abilitare l\'autenticazione.' } };
-    }
-    
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
@@ -102,10 +100,6 @@ export function useWarehouseAuth() {
   };
 
   const signUp = async (email: string, password: string, fullName?: string) => {
-    if (!isSupabaseConfigured) {
-      return { data: null, error: { message: 'Connessione al database non configurata. Connetti Supabase per abilitare l\'autenticazione.' } };
-    }
-    
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
@@ -120,19 +114,11 @@ export function useWarehouseAuth() {
   };
 
   const signOut = async () => {
-    if (!isSupabaseConfigured) {
-      return { error: null };
-    }
-    
     const { error } = await supabase.auth.signOut();
     return { error };
   };
 
   const resetPassword = async (email: string) => {
-    if (!isSupabaseConfigured) {
-      return { data: null, error: { message: 'Connessione al database non configurata.' } };
-    }
-    
     console.log('Invio email di reset per:', email);
     console.log('URL di redirect:', 'https://reusa.eu/reset-password');
     
