@@ -3,13 +3,39 @@ import { createClient } from '@supabase/supabase-js';
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
-// Check if Supabase is configured
-export const isSupabaseConfigured = !!(supabaseUrl && supabaseAnonKey && supabaseUrl !== 'your_project_url' && supabaseAnonKey !== 'your_api_key');
+// Force Supabase to be unconfigured for main app to use local cache
+export const isSupabaseConfigured = false;
 
-// Create a comprehensive mock client for when Supabase is not configured
+// Create a comprehensive mock client with localStorage persistence
 const createMockClient = () => {
-  // Mock data for demonstration
-  const mockBoxes = [
+  // Local storage keys
+  const STORAGE_KEYS = {
+    USER: 'reusa_user',
+    BOXES: 'reusa_boxes',
+    SESSION: 'reusa_session'
+  };
+
+  // Load data from localStorage
+  const loadFromStorage = (key: string, defaultValue: any = null) => {
+    try {
+      const stored = localStorage.getItem(key);
+      return stored ? JSON.parse(stored) : defaultValue;
+    } catch {
+      return defaultValue;
+    }
+  };
+
+  // Save data to localStorage
+  const saveToStorage = (key: string, data: any) => {
+    try {
+      localStorage.setItem(key, JSON.stringify(data));
+    } catch (error) {
+      console.warn('Failed to save to localStorage:', error);
+    }
+  };
+
+  // Initialize mock data
+  let mockBoxes = loadFromStorage(STORAGE_KEYS.BOXES, [
     {
       id: '1',
       user_id: 'demo-user',
@@ -17,6 +43,7 @@ const createMockClient = () => {
       height_cm: 20,
       depth_cm: 15,
       volume_l: 9,
+      reused: false,
       created_at: new Date().toISOString(),
     },
     {
@@ -26,6 +53,7 @@ const createMockClient = () => {
       height_cm: 30,
       depth_cm: 20,
       volume_l: 24,
+      reused: false,
       created_at: new Date(Date.now() - 86400000).toISOString(),
     },
     {
@@ -35,24 +63,42 @@ const createMockClient = () => {
       height_cm: 25,
       depth_cm: 25,
       volume_l: 15.6,
+      reused: true,
       created_at: new Date(Date.now() - 172800000).toISOString(),
     }
-  ];
+  ]);
 
-  let currentUser = null;
+  let currentUser = loadFromStorage(STORAGE_KEYS.USER, null);
   let authListeners: Array<(event: string, session: any) => void> = [];
+
+  // Save boxes to localStorage whenever they change
+  const saveBoxes = () => {
+    saveToStorage(STORAGE_KEYS.BOXES, mockBoxes);
+  };
+
+  // Save user to localStorage
+  const saveUser = (user: any) => {
+    currentUser = user;
+    saveToStorage(STORAGE_KEYS.USER, user);
+    if (user) {
+      const session = {
+        user,
+        access_token: 'demo-token',
+        refresh_token: 'demo-refresh',
+        expires_at: Date.now() + 3600000,
+        token_type: 'bearer'
+      };
+      saveToStorage(STORAGE_KEYS.SESSION, session);
+    } else {
+      localStorage.removeItem(STORAGE_KEYS.SESSION);
+    }
+  };
 
   return {
     auth: {
       getSession: () => Promise.resolve({ 
         data: { 
-          session: currentUser ? {
-            user: currentUser,
-            access_token: 'demo-token',
-            refresh_token: 'demo-refresh',
-            expires_at: Date.now() + 3600000,
-            token_type: 'bearer'
-          } : null 
+          session: currentUser ? loadFromStorage(STORAGE_KEYS.SESSION, null) : null 
         }, 
         error: null 
       }),
@@ -72,7 +118,7 @@ const createMockClient = () => {
       
       signInWithPassword: ({ email, password }: { email: string; password: string }) => {
         // Simulate successful login for demo
-        currentUser = {
+        const user = {
           id: 'demo-user-id',
           email: email,
           created_at: new Date().toISOString(),
@@ -82,13 +128,8 @@ const createMockClient = () => {
           user_metadata: {}
         };
         
-        const session = {
-          user: currentUser,
-          access_token: 'demo-token',
-          refresh_token: 'demo-refresh',
-          expires_at: Date.now() + 3600000,
-          token_type: 'bearer'
-        };
+        saveUser(user);
+        const session = loadFromStorage(STORAGE_KEYS.SESSION, null);
 
         // Notify listeners
         setTimeout(() => {
@@ -96,14 +137,14 @@ const createMockClient = () => {
         }, 100);
 
         return Promise.resolve({ 
-          data: { user: currentUser, session }, 
+          data: { user, session }, 
           error: null 
         });
       },
       
       signUp: ({ email, password }: { email: string; password: string }) => {
         // Simulate successful signup for demo
-        currentUser = {
+        const user = {
           id: 'demo-user-id',
           email: email,
           created_at: new Date().toISOString(),
@@ -113,13 +154,8 @@ const createMockClient = () => {
           user_metadata: {}
         };
 
-        const session = {
-          user: currentUser,
-          access_token: 'demo-token',
-          refresh_token: 'demo-refresh',
-          expires_at: Date.now() + 3600000,
-          token_type: 'bearer'
-        };
+        saveUser(user);
+        const session = loadFromStorage(STORAGE_KEYS.SESSION, null);
 
         // Notify listeners
         setTimeout(() => {
@@ -127,14 +163,13 @@ const createMockClient = () => {
         }, 100);
 
         return Promise.resolve({ 
-          data: { user: currentUser, session }, 
+          data: { user, session }, 
           error: null 
         });
       },
       
       signOut: () => {
-        const previousUser = currentUser;
-        currentUser = null;
+        saveUser(null);
         
         // Notify listeners
         setTimeout(() => {
@@ -164,7 +199,7 @@ const createMockClient = () => {
         console.log('Demo mode: OAuth sign-in with', provider);
         
         // Simulate successful OAuth login for demo
-        currentUser = {
+        const user = {
           id: 'demo-user-id',
           email: `demo@${provider}.com`,
           created_at: new Date().toISOString(),
@@ -174,13 +209,8 @@ const createMockClient = () => {
           user_metadata: { provider }
         };
         
-        const session = {
-          user: currentUser,
-          access_token: 'demo-token',
-          refresh_token: 'demo-refresh',
-          expires_at: Date.now() + 3600000,
-          token_type: 'bearer'
-        };
+        saveUser(user);
+        const session = loadFromStorage(STORAGE_KEYS.SESSION, null);
 
         // Notify listeners
         setTimeout(() => {
@@ -199,15 +229,13 @@ const createMockClient = () => {
         eq: (column: string, value: any) => ({
           order: (orderColumn: string, options?: any) => {
             if (table === 'boxes' && column === 'user_id' && currentUser) {
-              return Promise.resolve({ 
-                data: mockBoxes.sort((a, b) => {
-                  if (orderColumn === 'created_at' && options?.ascending === false) {
-                    return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
-                  }
-                  return 0;
-                }), 
-                error: null 
+              const sortedBoxes = [...mockBoxes].sort((a, b) => {
+                if (orderColumn === 'created_at' && options?.ascending === false) {
+                  return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+                }
+                return 0;
               });
+              return Promise.resolve({ data: sortedBoxes, error: null });
             }
             return Promise.resolve({ data: [], error: null });
           },
@@ -220,15 +248,13 @@ const createMockClient = () => {
         }),
         order: (orderColumn: string, options?: any) => {
           if (table === 'boxes' && currentUser) {
-            return Promise.resolve({ 
-              data: mockBoxes.sort((a, b) => {
-                if (orderColumn === 'created_at' && options?.ascending === false) {
-                  return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
-                }
-                return 0;
-              }), 
-              error: null 
+            const sortedBoxes = [...mockBoxes].sort((a, b) => {
+              if (orderColumn === 'created_at' && options?.ascending === false) {
+                return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+              }
+              return 0;
             });
+            return Promise.resolve({ data: sortedBoxes, error: null });
           }
           return Promise.resolve({ data: [], error: null });
         }
@@ -243,6 +269,7 @@ const createMockClient = () => {
             created_at: new Date().toISOString()
           };
           mockBoxes.unshift(newBox);
+          saveBoxes();
           return Promise.resolve({ data: [newBox], error: null });
         }
         return Promise.resolve({ data: null, error: { message: 'Demo mode - data not persisted' } });
@@ -254,6 +281,7 @@ const createMockClient = () => {
             const index = mockBoxes.findIndex(box => box.id === value);
             if (index > -1) {
               mockBoxes.splice(index, 1);
+              saveBoxes();
               return Promise.resolve({ data: null, error: null });
             }
           }
@@ -267,6 +295,7 @@ const createMockClient = () => {
             const index = mockBoxes.findIndex(box => box.id === value);
             if (index > -1) {
               mockBoxes[index] = { ...mockBoxes[index], ...data };
+              saveBoxes();
               return Promise.resolve({ data: [mockBoxes[index]], error: null });
             }
           }
@@ -277,22 +306,7 @@ const createMockClient = () => {
   };
 };
 
-export const supabase = isSupabaseConfigured 
-  ? createClient(supabaseUrl, supabaseAnonKey, {
-      auth: {
-        persistSession: true,
-        autoRefreshToken: true,
-      },
-      db: {
-        schema: 'public',
-      },
-      global: {
-        headers: {
-          'x-my-custom-header': 'reusa-app',
-        },
-      },
-    })
-  : createMockClient() as any;
+export const supabase = createMockClient() as any;
 
 export type Database = {
   public: {
@@ -305,6 +319,7 @@ export type Database = {
           height_cm: number;
           depth_cm: number;
           volume_l: number;
+          reused?: boolean;
           created_at: string;
         };
         Insert: {
@@ -314,6 +329,7 @@ export type Database = {
           height_cm: number;
           depth_cm: number;
           volume_l: number;
+          reused?: boolean;
           created_at?: string;
         };
         Update: {
@@ -323,6 +339,7 @@ export type Database = {
           height_cm?: number;
           depth_cm?: number;
           volume_l?: number;
+          reused?: boolean;
           created_at?: string;
         };
       };
